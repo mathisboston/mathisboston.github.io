@@ -5,14 +5,32 @@ import { SparkRenderer, SplatMesh } from "@sparkjsdev/spark";
 // AVATAR SCENE
 // =====================
 const avatarContainer = document.getElementById("avatar");
+const avatarHome = avatarContainer.parentElement;
+const mobileAvatarSlot = document.getElementById("mobile-avatar-slot");
+const mobileLayout = window.matchMedia("(max-width: 768px), (max-width: 1024px) and (max-height: 500px)");
+const placeAvatar = () => {
+  if (mobileLayout.matches) mobileAvatarSlot.appendChild(avatarContainer);
+  else avatarHome.prepend(avatarContainer);
+};
+placeAvatar();
+mobileLayout.addEventListener("change", placeAvatar);
 const avatarRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 avatarRenderer.setSize(avatarContainer.clientWidth, avatarContainer.clientHeight);
-avatarRenderer.setPixelRatio(window.devicePixelRatio);
+avatarRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 const avatarCanvas = avatarRenderer.domElement;
 avatarContainer.appendChild(avatarCanvas);
 
 const avatarScene = new THREE.Scene();
 const avatarCamera = new THREE.PerspectiveCamera(60, 1, 0.01, 1000);
+const avatarResizeObserver = new ResizeObserver(() => {
+  const width = avatarContainer.clientWidth;
+  const height = avatarContainer.clientHeight;
+  if (!width || !height) return;
+  avatarRenderer.setSize(width, height);
+  avatarCamera.aspect = width / height;
+  avatarCamera.updateProjectionMatrix();
+});
+avatarResizeObserver.observe(avatarContainer);
 
 const avatarSpark = new SparkRenderer({ renderer: avatarRenderer });
 avatarScene.add(avatarSpark);
@@ -43,6 +61,17 @@ let lastX = 0;
 let lastY = 0;
 let yaw = Math.PI;
 let pitch = 0;
+avatarPivot.rotation.y = yaw;
+let lastAvatarFrameTime = null;
+
+const resetAvatarLook = () => {
+  yaw = Math.PI;
+  pitch = 0;
+  isDragging = false;
+};
+document.documentElement.addEventListener("mouseleave", resetAvatarLook);
+window.addEventListener("blur", resetAvatarLook);
+mobileLayout.addEventListener("change", resetAvatarLook);
 
 avatarCanvas.addEventListener("mousedown", (e) => {
   isDragging = true;
@@ -59,29 +88,54 @@ avatarCanvas.addEventListener("touchstart", (e) => {
 
 window.addEventListener("mouseup", () => { isDragging = false; });
 window.addEventListener("touchend", () => { isDragging = false; });
+window.addEventListener("touchcancel", resetAvatarLook);
 
 window.addEventListener("mousemove", (e) => {
-  if (!isDragging) return;
-  yaw  -= (e.clientX - lastX) * 0.005;
-  pitch -= (e.clientY - lastY) * 0.005;
-  pitch  = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, pitch));
-  lastX = e.clientX;
-  lastY = e.clientY;
+  if (mobileLayout.matches) return;
+  const rect = avatarCanvas.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0) return;
+
+  const cursorX = e.clientX - (rect.left + rect.width / 2);
+  const cursorY = e.clientY - (rect.top + rect.height / 2);
+  // Convert the screen offset to a viewing angle using the camera's focal length.
+  const focalLength = rect.height / (2 * Math.tan(THREE.MathUtils.degToRad(avatarCamera.fov / 2)));
+  yaw = Math.PI + Math.atan2(cursorX, focalLength);
+  pitch = THREE.MathUtils.clamp(
+    -Math.atan2(cursorY, Math.hypot(cursorX, focalLength)),
+    -Math.PI / 3,
+    Math.PI / 3,
+  );
 });
 
 window.addEventListener("touchmove", (e) => {
   if (!isDragging) return;
-  yaw  -= (e.touches[0].clientX - lastX) * 0.005;
+  yaw  += (e.touches[0].clientX - lastX) * 0.005;
   pitch -= (e.touches[0].clientY - lastY) * 0.005;
   pitch  = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, pitch));
   lastX = e.touches[0].clientX;
   lastY = e.touches[0].clientY;
 }, { passive: true });
 
-avatarRenderer.setAnimationLoop(() => {
-  if (!isDragging) yaw += 0.01;
-  avatarPivot.rotation.y = yaw;
-  avatarPivot.rotation.x = pitch;
+// Load LinkedIn only when the visitor opens a demonstrator.
+document.querySelectorAll(".linkedin-demo").forEach((demo) => {
+  demo.addEventListener("toggle", () => {
+    if (!demo.open || demo.querySelector("iframe")) return;
+    const frame = document.createElement("iframe");
+    frame.src = demo.dataset.embed;
+    frame.title = demo.querySelector(".demo-title").textContent;
+    frame.allow = "fullscreen";
+    frame.allowFullscreen = true;
+    demo.querySelector(".linkedin-player").appendChild(frame);
+  });
+});
+
+avatarRenderer.setAnimationLoop((time) => {
+  const delta = lastAvatarFrameTime === null ? 0 : Math.min((time - lastAvatarFrameTime) / 1000, 0.1);
+  lastAvatarFrameTime = time;
+  const blend = 1 - Math.exp(-12 * delta);
+  const yawDelta = Math.atan2(Math.sin(yaw - avatarPivot.rotation.y), Math.cos(yaw - avatarPivot.rotation.y));
+  avatarPivot.rotation.y += yawDelta * blend;
+  avatarPivot.rotation.x = THREE.MathUtils.lerp(avatarPivot.rotation.x, pitch, blend);
   avatarCamera.position.set(0, 0, avatarRadius);
   avatarCamera.lookAt(avatarTarget);
   avatarRenderer.render(avatarScene, avatarCamera);
