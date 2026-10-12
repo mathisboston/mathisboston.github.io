@@ -1,0 +1,81 @@
+name: Validate and deploy Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Validate JavaScript and assemble site
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          import subprocess
+
+          tracked = subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0')
+          output = Path('_site')
+          output.mkdir(exist_ok=True)
+          count = 0
+          for name in filter(None, tracked):
+              source = Path(name)
+              publish = (
+                  name in {'index.html', 'main.js', 'style.css', '.docs/CAPTURE_DEMO.md'}
+                  or name.startswith('assets/')
+                  or (name.startswith('demo/') and source.suffix in {'.html', '.css', '.js', '.mjs'})
+              )
+              if not publish:
+                  continue
+              if source.suffix in {'.js', '.mjs'}:
+                  subprocess.run(['node', '--check', str(source)], check=True)
+              destination = output / source
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copy2(source, destination)
+              count += 1
+          assert (output / 'index.html').is_file(), 'Missing site entry point'
+          print(f'Validated and assembled {count} files')
+          PY
+
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Deploy site
+        id: deployment
+        uses: actions/deploy-pages@v4
