@@ -134,6 +134,27 @@ body {
 }
 #avatar:active { cursor: grabbing; }
 #avatar canvas { display: block; touch-action: none; }
+#avatar.avatar-click-hint {
+  cursor: pointer;
+  animation: avatar-click-halo 12s ease-out 3s infinite;
+}
+@keyframes avatar-click-halo {
+  0%, 18%, 100% {
+    outline: 2px solid transparent;
+    outline-offset: 1px;
+  }
+  4% {
+    outline: 2px solid color-mix(in srgb, var(--accent) 18%, transparent);
+    outline-offset: 2px;
+  }
+  17% {
+    outline: 2px solid transparent;
+    outline-offset: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #avatar.avatar-click-hint { animation: none; }
+}
 #mobile-avatar-slot { display: none; }
 
 #sidebar-info {
@@ -511,6 +532,39 @@ body {
   font-size: 15px;
   color: var(--muted);
   margin-bottom: 14px;
+}
+
+.avatar-modal {
+  width: min(900px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 20px;
+  box-sizing: border-box;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--text);
+}
+.avatar-modal::backdrop { background: rgb(0 0 0 / 65%); }
+.avatar-modal header { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.avatar-modal h2 { margin: 0; font-size: 20px; }
+.avatar-modal button { background: transparent; border: 0; color: inherit; font-size: 28px; cursor: pointer; padding: 4px 12px; }
+.avatar-modal-stage { height: min(65dvh, 600px); width: 100%; }
+.avatar-modal-stage canvas { display: block; touch-action: none; }
+.avatar-modal p { margin: 12px 0 0; font-size: 13px; color: var(--muted); }
+.avatar-modal footer { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.avatar-modal footer p { flex: 1 1 220px; margin: 0; }
+.avatar-modal .avatar-modal-reset { font: inherit; font-size: 13px; padding: 8px 14px; border: 1px solid var(--border2); border-radius: 8px; }
+.avatar-modal-reset:disabled { opacity: 0.4; cursor: default; }
+.avatar-modal .avatar-modal-count { margin-top: 6px; }
+.avatar-model-enter { animation: avatar-model-enter 550ms ease-out both; }
+@keyframes avatar-model-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .avatar-model-enter { animation: none; }
 }
 
 /* PROJECTS */

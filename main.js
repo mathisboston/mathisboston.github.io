@@ -1,10 +1,12 @@
 import * as THREE from "three";
 import { SparkRenderer, SplatMesh } from "@sparkjsdev/spark";
+import { attachAvatarModal } from "./avatar-modal.js";
 
 // =====================
 // AVATAR SCENE
 // =====================
 const avatarContainer = document.getElementById("avatar");
+attachAvatarModal(avatarContainer);
 const avatarHome = avatarContainer.parentElement;
 const mobileAvatarSlot = document.getElementById("mobile-avatar-slot");
 const mobileLayout = window.matchMedia("(max-width: 768px), (max-width: 1024px) and (max-height: 500px)");

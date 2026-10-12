@@ -41,7 +41,7 @@ jobs:
           for name in filter(None, tracked):
               source = Path(name)
               publish = (
-                  name in {'index.html', 'main.js', 'style.css', '.docs/CAPTURE_DEMO.md'}
+                  name in {'index.html', 'main.js', 'avatar-modal.js', 'avatar-reveal.js', 'style.css', '.docs/CAPTURE_DEMO.md'}
                   or name.startswith('assets/')
                   or (name.startswith('demo/') and source.suffix in {'.html', '.css', '.js', '.mjs'})
               )
