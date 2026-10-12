@@ -1754,6 +1754,7 @@ function initSceneAndRender(positions, colors, splatScale = SPLAT_SCALE, perPoin
   // Safe to call repeatedly (e.g. switching between hull/mesh view on already-captured
   // samples): tear down any previous scene first instead of stacking canvases/render loops.
   teardownScene();
+  container.classList.remove("hidden");
 
   // debug probe: the raw point cloud actually rendered, for external tooling (test/) that
   // needs to score reconstruction quality (e.g. a geometric-coherence metric via connected
@@ -1768,12 +1769,12 @@ function initSceneAndRender(positions, colors, splatScale = SPLAT_SCALE, perPoin
                                       // behavior: buildPointCloud was the only place setting it)
 
   renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
   container.appendChild(renderer.domElement);
 
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.01, 1000);
+  camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.01, 1000);
 
   // Real gaussian splatting via SparkJS: one gaussian per point (same stack as the portfolio
   // background). Falls back to THREE.Points if SparkJS can't initialize (e.g. no WebGL2).
@@ -1890,9 +1891,9 @@ function attachOrbitControls() {
 
 function onResize() {
   if (!renderer) return;
-  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.aspect = container.clientWidth / container.clientHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(container.clientWidth, container.clientHeight);
 }
 
 // Debug: render each captured frame as a thumbnail (foreground kept, background

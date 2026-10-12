@@ -7,6 +7,7 @@
   <title>Bullet time — Mathis Boston</title>
   <script>try { const t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch {}</script>
   <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="bullet-time.css" />
   <script type="importmap">
   { "imports": {
@@ -19,7 +20,10 @@
 <body>
   <main class="bt-shell">
     <header class="bt-header">
-      <a href="../../index.html#projets" class="mono bt-back">← Portfolio</a>
+      <a id="demo-back" href="../../index.html#projets" class="bt-back">
+        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+        <span>Retour au portfolio</span>
+      </a>
       <span class="mono bt-local">Traitement local · Vidéo privée</span>
     </header>
     <div class="bt-intro">

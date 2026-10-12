@@ -35,19 +35,22 @@
       transition: border-color 0.2s, color 0.2s;
     }
     #demo-back:hover { border-color: var(--accent); color: var(--accent); }
+    #demo-load-json-btn { position: fixed; top: 24px; right: 24px; z-index: 20; padding: 10px 16px; font-size: 13px; }
 
     /* ---- Center stage (webcam / capture states) ---- */
     #demo-stage {
       position: fixed; inset: 0; z-index: 10;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 24px; text-align: center; padding: 24px;
+      gap: 24px; text-align: center; padding: 88px 24px 24px;
+      overflow-y: auto; justify-content: safe center;
       background: var(--bg);
     }
     #demo-stage.hidden { display: none; }
 
     #demo-video-wrap {
       position: relative;
-      width: min(520px, 90vw);
+      width: min(520px, 100%);
+      flex-shrink: 0;
       aspect-ratio: 4 / 3;
       border-radius: 14px;
       overflow: hidden;
@@ -103,6 +106,7 @@
       position: fixed; bottom: 24px; left: 24px; z-index: 20;
       padding: 16px 20px; border: 1px solid var(--border2); border-radius: 10px;
       background: var(--surface); max-width: 340px;
+      max-height: calc(100dvh - 100px); overflow-y: auto;
     }
     #demo-panel.hidden { display: none; }
     #demo-panel .demo-panel-title { font-family: 'DM Serif Display', serif; font-size: 18px; margin-bottom: 8px; }
@@ -156,7 +160,10 @@
     .film-label b { color: var(--accent); }
     .film-label .flow { color: var(--muted2); }
 
-    @media (max-width: 640px) {
+    @media (max-width: 640px), (max-width: 1024px) and (max-height: 500px) {
+      #demo-back { top: 12px; left: 12px; padding: 10px; font-size: 12px; min-height: 44px; }
+      #demo-load-json-btn { top: 12px; right: 12px; padding: 10px; font-size: 12px; min-height: 44px; }
+      #demo-stage { padding: 76px 16px 24px; gap: 16px; }
       #demo-container { bottom: 44vh; }
       #demo-panel {
         left: 12px; right: 12px; bottom: 12px; max-width: none;
@@ -164,6 +171,10 @@
       }
       #demo-hint { display: none; }
       #demo-debug { top: 76px; }
+    }
+    @media (min-width: 600px) and (max-width: 1024px) and (max-height: 500px) {
+      #demo-container { right: 42vw; bottom: 0; }
+      #demo-panel { left: auto; width: 40vw; max-height: calc(100dvh - 88px); }
     }
   </style>
 </head>
@@ -177,8 +188,7 @@
 
   <!-- Dev tool: reload a cloud saved via "Sauver (JSON)", bypassing capture entirely — kept
        reachable at every phase (idle, capturing, result) since it replaces whatever's on screen. -->
-  <button id="demo-load-json-btn" class="demo-btn"
-    style="position:fixed; top:24px; right:24px; z-index:20; padding:10px 16px; font-size:13px;">Charger (JSON)</button>
+  <button id="demo-load-json-btn" class="demo-btn">Charger (JSON)</button>
   <input id="demo-load-json-input" type="file" accept="application/json" style="display:none;" />
 
   <!-- Idle / permission / capturing stage -->

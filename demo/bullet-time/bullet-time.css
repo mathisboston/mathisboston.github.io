@@ -1,6 +1,14 @@
 .bt-shell { max-width: 1200px; margin: auto; padding: 28px 32px 40px; }
 .bt-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: 12px; }
-.bt-back { color: var(--text); text-decoration: none; }
+.bt-back {
+  position: fixed; top: 24px; left: 24px; z-index: 20;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border: 1px solid var(--border2); border-radius: 8px;
+  background: var(--surface); color: var(--text); text-decoration: none; font-size: 13px;
+  transition: border-color 0.2s, color 0.2s;
+}
+.bt-back:hover { border-color: var(--accent); color: var(--accent); }
+.bt-header { min-height: 42px; justify-content: flex-end; padding-left: 200px; }
 .bt-local { color: var(--accent); }
 .bt-intro { margin: 65px 0 32px; }
 .bt-eyebrow { color: var(--accent); font-size: 11px; letter-spacing: 2px; }
@@ -58,6 +66,9 @@ progress { width: 100%; accent-color: var(--accent); }
 [hidden] { display: none !important; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 @media (max-width: 760px) {
+  .bt-header { padding-left: 0; flex-wrap: wrap; gap: 12px; }
+  .bt-back { position: static; min-height: 44px; font-size: 12px; }
+  .bt-local { flex: 1 1 120px; text-align: right; line-height: 1.5; }
   .bt-shell { padding: 20px 16px 30px; }
   .bt-intro { margin-top: 40px; }
   .bt-layout { grid-template-columns: minmax(0, 1fr); gap: 16px; }
