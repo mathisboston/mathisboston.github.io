@@ -6,7 +6,7 @@ import { SparkRenderer, SplatMesh } from "@sparkjsdev/spark";
 // =====================
 const avatarContainer = document.getElementById("avatar");
 const avatarRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-avatarRenderer.setSize(110, 110);
+avatarRenderer.setSize(avatarContainer.clientWidth, avatarContainer.clientHeight);
 avatarRenderer.setPixelRatio(window.devicePixelRatio);
 const avatarCanvas = avatarRenderer.domElement;
 avatarContainer.appendChild(avatarCanvas);
@@ -17,16 +17,31 @@ const avatarCamera = new THREE.PerspectiveCamera(60, 1, 0.01, 1000);
 const avatarSpark = new SparkRenderer({ renderer: avatarRenderer });
 avatarScene.add(avatarSpark);
 
-const avatarSplat = new SplatMesh({ url: "./assets/gs/flowers.sog", lod: false });
+const avatarSplat = new SplatMesh({ url: "./assets/gs/mathis_headneck_lite_low_cleaned.sog", lod: false });
 const avatarTarget = new THREE.Vector3(0, 0, 0);
 avatarSplat.rotation.x = Math.PI;
-avatarSplat.position.y = -0.5;
-avatarScene.add(avatarSplat);
+const avatarPivot = new THREE.Group();
+avatarPivot.rotation.order = "YXZ";
+avatarPivot.add(avatarSplat);
+avatarScene.add(avatarPivot);
+let avatarRadius = 1.5;
+
+avatarSplat.initialized.then(() => {
+  // Center the model inside a parent pivot so it can rotate in place.
+  const bounds = avatarSplat.getBoundingBox(false);
+  const center = bounds.getCenter(new THREE.Vector3()).applyQuaternion(avatarSplat.quaternion);
+  avatarSplat.position.copy(center).negate();
+
+  // Fit the complete head-and-neck bounds with a little breathing room.
+  const size = bounds.getSize(new THREE.Vector3());
+  const boundsRadius = size.length() / 2;
+  avatarRadius = boundsRadius / Math.sin(THREE.MathUtils.degToRad(avatarCamera.fov / 2)) * 0.92;
+}).catch((error) => console.error("Avatar splat failed to load:", error));
 
 let isDragging = false;
 let lastX = 0;
 let lastY = 0;
-let yaw = 0;
+let yaw = Math.PI;
 let pitch = 0;
 
 avatarCanvas.addEventListener("mousedown", (e) => {
@@ -64,11 +79,10 @@ window.addEventListener("touchmove", (e) => {
 }, { passive: true });
 
 avatarRenderer.setAnimationLoop(() => {
-  if (!isDragging) yaw += 0.002;
-  const radius = 1.5;
-  avatarCamera.position.x = Math.cos(pitch) * Math.sin(yaw) * radius;
-  avatarCamera.position.y = Math.sin(pitch) * radius;
-  avatarCamera.position.z = Math.cos(pitch) * Math.cos(yaw) * radius;
+  if (!isDragging) yaw += 0.01;
+  avatarPivot.rotation.y = yaw;
+  avatarPivot.rotation.x = pitch;
+  avatarCamera.position.set(0, 0, avatarRadius);
   avatarCamera.lookAt(avatarTarget);
   avatarRenderer.render(avatarScene, avatarCamera);
 });
