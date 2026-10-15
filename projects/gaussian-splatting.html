@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Framework 3D Gaussian Splatting : streaming à VRAM maîtrisée, comparaison des apparences SH, SG et Voronoi, entraînement et export vidéo." />
+  <meta name="theme-color" content="#0a0c12" />
+  <title>Reconstruction 3DGS — Mathis Boston</title>
+  <script>try { const t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch {}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="gaussian-splatting.css" />
+  <script src="gaussian-splatting.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Aller au contenu</a>
+  <div id="noise" aria-hidden="true"></div>
+  <main id="main" class="gs-page">
+    <header class="gs-topbar">
+      <a class="gs-back mono" href="../index.html#projets" data-fr="← Portfolio" data-en="← Portfolio">← Portfolio</a>
+      <div class="gs-tools">
+        <span class="gs-draft mono" data-fr="Projet professionnel · page de travail" data-en="Professional work · draft page">Projet professionnel · page de travail</span>
+        <button id="gs-theme" type="button" aria-label="Changer le thème">☼</button>
+        <button id="gs-language" class="mono" type="button" aria-label="Switch language">EN</button>
+      </div>
+    </header>
+
+    <section class="gs-hero">
+      <div class="gs-hero-copy">
+        <p class="gs-eyebrow mono" data-fr="R&D · VISION PAR ORDINATEUR · 3D" data-en="R&D · COMPUTER VISION · 3D">R&D · VISION PAR ORDINATEUR · 3D</p>
+        <h1 data-fr="Du calcul à l’exploration interactive." data-en="From reconstruction to interactive exploration.">Du calcul à l’exploration interactive.</h1>
+        <p class="gs-intro" data-fr="J’ai conçu, développé et assuré le support d’outils de reconstruction 3D Gaussian Splatting. Cette page montre le lien entre entraînement, inspection des résultats et export." data-en="I designed, built and supported 3D Gaussian Splatting reconstruction tools. This page shows the path from training to result inspection and export.">J’ai conçu, développé et assuré le support d’outils de reconstruction 3D Gaussian Splatting. Cette page montre le lien entre entraînement, inspection des résultats et export.</p>
+        <div class="gs-byline mono">MATHIS BOSTON <span>·</span> <span data-fr="INGÉNIEUR R&D" data-en="R&D ENGINEER">INGÉNIEUR R&D</span></div>
+      </div>
+      <figure class="gs-hero-visual">
+        <img src="../assets/projects/gaussian-splatting/CAP-01.png" alt="Vue interactive d’une reconstruction 3D d’une salle patrimoniale" fetchpriority="high" />
+        <figcaption class="mono" data-fr="Vue du viewer · scène patrimoniale publique" data-en="Viewer · public heritage scene">Vue du viewer · scène patrimoniale publique</figcaption>
+      </figure>
+    </section>
+
+    <section class="gs-section" aria-labelledby="gs-work-title">
+      <div class="gs-section-heading">
+        <p class="gs-eyebrow mono" data-fr="OUTILS DÉVELOPPÉS" data-en="TOOLS I BUILT">OUTILS DÉVELOPPÉS</p>
+        <h2 id="gs-work-title" data-fr="Voir, comparer, partager" data-en="Inspect, compare, share">Voir, comparer, partager</h2>
+      </div>
+
+      <div class="gs-video-grid">
+        <article class="gs-card gs-card-wide">
+          <div class="gs-card-copy">
+            <span class="gs-index mono">01 / ENTRAÎNEMENT</span>
+            <h3 data-fr="Observer en direct" data-en="Live training preview">Observer en direct</h3>
+            <p data-fr="Suivre la reconstruction, puis mettre l’entraînement en pause et le reprendre." data-en="Watch the reconstruction evolve, then pause and resume training.">Suivre la reconstruction, puis mettre l’entraînement en pause et le reprendre.</p>
+          </div>
+          <video controls playsinline preload="metadata" poster="../assets/projects/gaussian-splatting/CAP-01.png" aria-label="Live preview pendant un entraînement, avec pause et reprise">
+            <source src="../assets/projects/gaussian-splatting/CAP-02.mp4" type="video/mp4" />
+          </video>
+          <p class="gs-media-note mono" data-fr="Enregistrement réel · 22 s" data-en="Real capture · 22 s">Enregistrement réel · 22 s</p>
+        </article>
+
+        <article class="gs-card">
+          <div class="gs-card-copy">
+            <span class="gs-index mono">02 / COMPARAISON</span>
+            <h3 data-fr="Comparer au même point de vue" data-en="Compare from the same viewpoint">Comparer au même point de vue</h3>
+            <p data-fr="Deux reconstructions de la même scène, avec un séparateur déplaçable." data-en="Two reconstructions of the same scene, with a movable divider.">Deux reconstructions de la même scène, avec un séparateur déplaçable.</p>
+          </div>
+          <video controls playsinline preload="metadata" poster="../assets/projects/gaussian-splatting/CAP-04.png" aria-label="Comparaison de deux reconstructions avec déplacement du séparateur">
+            <source src="../assets/projects/gaussian-splatting/CAP-04.mp4" type="video/mp4" />
+          </video>
+          <p class="gs-media-note mono" data-fr="Le clip illustre le viewer, pas un benchmark des méthodes." data-en="This clip demonstrates the viewer, not a benchmark of the methods.">Le clip illustre le viewer, pas un benchmark des méthodes.</p>
+          <a class="gs-feature-link mono" href="#gs-appearance-title" data-fr="SH · SG · Voronoi : les modèles d’apparence ↓" data-en="SH · SG · Voronoi: appearance models ↓">SH · SG · Voronoi : les modèles d’apparence ↓</a>
+        </article>
+
+        <article class="gs-card">
+          <div class="gs-card-copy">
+            <span class="gs-index mono">03 / EXPORT</span>
+            <h3 data-fr="Capturer une exploration" data-en="Record an exploration">Capturer une exploration</h3>
+            <p data-fr="Déclencher une capture et un enregistrement depuis le viewer." data-en="Capture a still and record a video from the viewer.">Déclencher une capture et un enregistrement depuis le viewer.</p>
+          </div>
+          <video controls playsinline preload="metadata" poster="../assets/projects/gaussian-splatting/CAP-01.png" aria-label="Utilisation des commandes de capture et d’enregistrement vidéo">
+            <source src="../assets/projects/gaussian-splatting/CAP-05.mp4" type="video/mp4" />
+          </video>
+          <div class="gs-output">
+            <span class="gs-output-label mono" data-fr="FICHIER VIDÉO PRODUIT PAR LE VIEWER" data-en="VIDEO FILE EXPORTED BY THE VIEWER">FICHIER VIDÉO PRODUIT PAR LE VIEWER</span>
+            <video controls playsinline preload="metadata" aria-label="Résultat vidéo enregistré depuis le viewer">
+              <source src="../assets/projects/gaussian-splatting/EXPLORATION.mp4" type="video/mp4" />
+            </video>
+          </div>
+        </article>
+
+        <article class="gs-card gs-sequence-card" aria-labelledby="gs-sequence-title">
+          <div class="gs-card-copy">
+            <span class="gs-index mono">04 / SÉQUENCES PLY</span>
+            <h3 id="gs-sequence-title" data-fr="Naviguer dans une séquence PLY" data-en="Navigate a PLY sequence">Naviguer dans une séquence PLY</h3>
+            <p data-fr="J’ai développé la navigation par index, les commandes précédent/suivant et la lecture à cadence réglable pour inspecter des séquences de modèles." data-en="I developed index navigation, previous/next controls and adjustable playback to inspect model sequences.">J’ai développé la navigation par index, les commandes précédent/suivant et la lecture à cadence réglable pour inspecter des séquences de modèles.</p>
+          </div>
+          <div class="gs-streaming" aria-labelledby="gs-streaming-title">
+            <div>
+              <span class="gs-index mono" data-fr="INGÉNIERIE DU VIEWER" data-en="VIEWER ENGINEERING">INGÉNIERIE DU VIEWER</span>
+              <h4 id="gs-streaming-title" data-fr="Streaming intelligent, VRAM maîtrisée" data-en="Smart streaming, controlled VRAM usage">Streaming intelligent, VRAM maîtrisée</h4>
+              <p data-fr="La mémoire GPU conserve les modèles affichés et le préchargement autorisé. L’empreinte dépend de cette fenêtre de lecture, et non de toute la séquence." data-en="GPU memory retains the displayed models and permitted prefetch data. Its footprint follows this playback window, rather than the entire sequence.">La mémoire GPU conserve les modèles affichés et le préchargement autorisé. L’empreinte dépend de cette fenêtre de lecture, et non de toute la séquence.</p>
+            </div>
+            <ul class="gs-streaming-points">
+              <li data-fr="Chargement à la demande" data-en="On-demand loading">Chargement à la demande</li>
+              <li data-fr="Préchargement des prochaines frames" data-en="Upcoming-frame prefetch">Préchargement des prochaines frames</li>
+              <li data-fr="Caches RAM et GPU bornés" data-en="Bounded RAM and GPU caches">Caches RAM et GPU bornés</li>
+            </ul>
+          </div>
+          <video controls playsinline preload="metadata" width="1600" height="1000" poster="../assets/projects/gaussian-splatting/PLY-SEQUENCE.jpg" aria-label="Capture du viewer : navigation par index, clics suivant et précédent, lecture, pause et réglage de la cadence">
+            <source src="../assets/projects/gaussian-splatting/PLY-SEQUENCE.mp4" type="video/mp4" />
+          </video>
+          <p class="gs-media-note mono" data-fr="Capture réelle du viewer · clics mis en évidence · 32 s · scène distincte des captures patrimoniales" data-en="Real viewer capture · highlighted clicks · 32 s · separate scene from the heritage captures">Capture réelle du viewer · clics mis en évidence · 32 s · scène distincte des captures patrimoniales</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="gs-section gs-appearance" aria-labelledby="gs-appearance-title">
+      <div class="gs-section-heading">
+        <p class="gs-eyebrow mono" data-fr="MODÈLES D’APPARENCE" data-en="APPEARANCE MODELS">MODÈLES D’APPARENCE</p>
+        <h2 id="gs-appearance-title" data-fr="Comparer SH, SG et Voronoi" data-en="Compare SH, SG and Voronoi">Comparer SH, SG et Voronoi</h2>
+        <p data-fr="J’ai intégré plusieurs représentations d’apparence à un framework commun, avec les mêmes outils de chargement, d’inspection et de comparaison à point de vue partagé." data-en="I integrated multiple appearance representations into a shared framework, with common tools for loading, inspection and comparison from the same viewpoint.">J’ai intégré plusieurs représentations d’apparence à un framework commun, avec les mêmes outils de chargement, d’inspection et de comparaison à point de vue partagé.</p>
+      </div>
+      <div class="gs-appearance-toolbar" role="group" aria-label="Lecture de l’apparence">
+        <button type="button" class="mono" data-appearance-mode="rgb" aria-pressed="true">RGB</button>
+        <button type="button" class="mono" data-appearance-mode="directional" aria-pressed="false" data-fr="Contribution directionnelle ×4" data-en="Directional contribution ×4">Contribution directionnelle ×4</button>
+        <span class="mono" data-fr="Cliquer sur une image pour l’agrandir" data-en="Click an image to enlarge it">Cliquer sur une image pour l’agrandir</span>
+      </div>
+      <p class="gs-appearance-protocol" data-fr="Même sous-ensemble de 25 images · 30 000 itérations par modèle · point de vue partagé" data-en="Same subset of 25 images · 30,000 iterations per model · shared viewpoint">Même sous-ensemble de 25 images · 30 000 itérations par modèle · point de vue partagé</p>
+      <div class="gs-appearance-grid">
+        <article class="gs-card gs-appearance-card">
+          <span class="gs-appearance-mark mono">SH</span>
+          <a class="gs-appearance-image" href="../assets/projects/gaussian-splatting/APPEARANCE-SH3-RGB.jpg" target="_blank" rel="noopener noreferrer">
+            <img src="../assets/projects/gaussian-splatting/APPEARANCE-SH3-RGB.jpg" data-rgb="../assets/projects/gaussian-splatting/APPEARANCE-SH3-RGB.jpg" data-directional="../assets/projects/gaussian-splatting/APPEARANCE-SH3-DIRECTIONAL.jpg" width="1260" height="700" loading="lazy" alt="Plateau et cruches · SH degré 3" aria-describedby="gs-directional-note" />
+          </a>
+          <span class="gs-appearance-config mono">SH degré 3</span>
+          <h3 data-fr="Harmoniques sphériques" data-en="Spherical harmonics">Harmoniques sphériques</h3>
+          <p data-fr="Inspection de l’apparence avec un ordre SH réglable dans le viewer." data-en="Inspect appearance with an adjustable SH degree in the viewer.">Inspection de l’apparence avec un ordre SH réglable dans le viewer.</p>
+          <span class="gs-appearance-control mono" data-fr="CONTRÔLE · ORDRE SH" data-en="CONTROL · SH DEGREE">CONTRÔLE · ORDRE SH</span>
+        </article>
+        <article class="gs-card gs-appearance-card">
+          <span class="gs-appearance-mark mono">SG</span>
+          <a class="gs-appearance-image" href="../assets/projects/gaussian-splatting/APPEARANCE-SG-RGB.jpg" target="_blank" rel="noopener noreferrer">
+            <img src="../assets/projects/gaussian-splatting/APPEARANCE-SG-RGB.jpg" data-rgb="../assets/projects/gaussian-splatting/APPEARANCE-SG-RGB.jpg" data-directional="../assets/projects/gaussian-splatting/APPEARANCE-SG-DIRECTIONAL.jpg" width="1260" height="700" loading="lazy" alt="Plateau et cruches · SH degré 2 + 3 SG" aria-describedby="gs-directional-note" />
+          </a>
+          <span class="gs-appearance-config mono">SH degré 2 + 3 SG</span>
+          <h3 data-fr="Gaussiennes sphériques" data-en="Spherical Gaussians">Gaussiennes sphériques</h3>
+          <p data-fr="Réglage du nombre de lobes actifs et inspection de leur contribution au rendu." data-en="Adjust the number of active lobes and inspect their contribution to the render.">Réglage du nombre de lobes actifs et inspection de leur contribution au rendu.</p>
+          <span class="gs-appearance-control mono" data-fr="CONTRÔLE · LOBES ACTIFS" data-en="CONTROL · ACTIVE LOBES">CONTRÔLE · LOBES ACTIFS</span>
+        </article>
+        <article class="gs-card gs-appearance-card">
+          <span class="gs-appearance-mark mono">Voronoi</span>
+          <a class="gs-appearance-image" href="../assets/projects/gaussian-splatting/APPEARANCE-VORONOI-RGB.jpg" target="_blank" rel="noopener noreferrer">
+            <img src="../assets/projects/gaussian-splatting/APPEARANCE-VORONOI-RGB.jpg" data-rgb="../assets/projects/gaussian-splatting/APPEARANCE-VORONOI-RGB.jpg" data-directional="../assets/projects/gaussian-splatting/APPEARANCE-VORONOI-DIRECTIONAL.jpg" width="1260" height="700" loading="lazy" alt="Plateau et cruches · Voronoi · 8 sites" aria-describedby="gs-directional-note" />
+          </a>
+          <span class="gs-appearance-config mono">Voronoi · 8 sites</span>
+          <h3 data-fr="Voronoi sphérique" data-en="Spherical Voronoi">Voronoi sphérique</h3>
+          <p data-fr="Inspection d’une représentation d’apparence par sites, avec un nombre de sites actifs réglable." data-en="Inspect a site-based appearance representation with an adjustable number of active sites.">Inspection d’une représentation d’apparence par sites, avec un nombre de sites actifs réglable.</p>
+          <span class="gs-appearance-control mono" data-fr="CONTRÔLE · SITES ACTIFS" data-en="CONTROL · ACTIVE SITES">CONTRÔLE · SITES ACTIFS</span>
+        </article>
+      </div>
+      <div class="gs-appearance-pair" aria-labelledby="gs-pair-title">
+        <div class="gs-appearance-pair-heading">
+          <div>
+            <span class="gs-index mono" data-fr="COMPARAISON INTERACTIVE" data-en="INTERACTIVE COMPARISON">COMPARAISON INTERACTIVE</span>
+            <h3 id="gs-pair-title" data-fr="Faire glisser pour comparer deux mod&#xE8;les" data-en="Slide to compare two models">Faire glisser pour comparer deux mod&#xE8;les</h3>
+            <p data-fr="Choisis deux repr&#xE9;sentations. Le curseur r&#xE9;v&#xE8;le le mod&#xE8;le &#xE0; droite, dans le m&#xEA;me mode d&#x2019;affichage et au m&#xEA;me point de vue." data-en="Choose two representations. The slider reveals the model on the right, in the same display mode and from the same viewpoint.">Choisis deux repr&#xE9;sentations. Le curseur r&#xE9;v&#xE8;le le mod&#xE8;le &#xE0; droite, dans le m&#xEA;me mode d&#x2019;affichage et au m&#xEA;me point de vue.</p>
+          </div>
+          <div class="gs-appearance-pair-selectors">
+            <label><span data-fr="Gauche" data-en="Left">Gauche</span><select id="gs-pair-a">
+              <option value="sh3" data-fr="SH · degr&#xE9; 3" data-en="SH · degree 3">SH · degr&#xE9; 3</option>
+              <option value="sg" data-fr="SH · degr&#xE9; 2 + 3 SG" data-en="SH · degree 2 + 3 SG">SH · degr&#xE9; 2 + 3 SG</option>
+              <option value="voronoi" data-fr="Voronoi · 8 sites" data-en="Voronoi · 8 sites">Voronoi · 8 sites</option>
+            </select></label>
+            <label><span data-fr="Droite" data-en="Right">Droite</span><select id="gs-pair-b">
+              <option value="sh3" data-fr="SH · degr&#xE9; 3" data-en="SH · degree 3">SH · degr&#xE9; 3</option>
+              <option value="sg" selected data-fr="SH · degr&#xE9; 2 + 3 SG" data-en="SH · degree 2 + 3 SG">SH · degr&#xE9; 2 + 3 SG</option>
+              <option value="voronoi" data-fr="Voronoi · 8 sites" data-en="Voronoi · 8 sites">Voronoi · 8 sites</option>
+            </select></label>
+          </div>
+        </div>
+        <div class="gs-appearance-stage" id="gs-pair-stage" style="--split:50%">
+          <img id="gs-pair-image-a" src="../assets/projects/gaussian-splatting/APPEARANCE-SH3-RGB.jpg" width="1260" height="700" alt="Mod&#xE8;le compar&#xE9; &#xE0; gauche" />
+          <img id="gs-pair-image-b" class="gs-appearance-stage-overlay" src="../assets/projects/gaussian-splatting/APPEARANCE-SG-RGB.jpg" width="1260" height="700" alt="Mod&#xE8;le compar&#xE9; &#xE0; droite" />
+          <span class="gs-appearance-divider" aria-hidden="true"></span>
+        </div>
+        <div class="gs-appearance-pair-labels"><span id="gs-pair-label-a">SH · degr&#xE9; 3</span><span id="gs-pair-label-b">SH · degr&#xE9; 2 + 3 SG</span></div>
+        <label class="gs-appearance-range-label"><span data-fr="D&#xE9;placer le s&#xE9;parateur" data-en="Move the divider">D&#xE9;placer le s&#xE9;parateur</span><input id="gs-pair-range" type="range" min="0" max="100" value="50" data-aria-fr="D&#xE9;placer le s&#xE9;parateur entre les deux mod&#xE8;les" data-aria-en="Move the divider between the two models" aria-label="D&#xE9;placer le s&#xE9;parateur entre les deux mod&#xE8;les" /></label>
+      </div>
+      <p id="gs-directional-note" class="gs-appearance-protocol" data-fr="La contribution directionnelle affiche l’écart positif à la couleur moyenne angulaire de chaque primitive, avec un gain commun ×4, la même courbe de compression et un encodage sRGB pour l’écran. C’est une lecture des variations selon le point de vue, pas une séparation physique des matériaux et de l’éclairage." data-en="Directional contribution displays the positive deviation from each primitive’s angular mean color, using a shared ×4 gain, the same tone curve and sRGB screen encoding. It reveals view-dependent variations, rather than a physical separation of materials and lighting.">La contribution directionnelle affiche l’écart positif à la couleur moyenne angulaire de chaque primitive, avec un gain commun ×4, la même courbe de compression et un encodage sRGB pour l’écran. C’est une lecture des variations selon le point de vue, pas une séparation physique des matériaux et de l’éclairage.</p>
+      <figure class="gs-card gs-appearance-film">
+        <video controls playsinline loop preload="metadata" width="1920" height="864" poster="../assets/projects/gaussian-splatting/APPEARANCE-COMPARE.jpg" aria-label="Trajet caméra identique : SH3, SH2 et trois SG, et Voronoi ; rendu RGB puis contribution directionnelle">
+          <source src="../assets/projects/gaussian-splatting/APPEARANCE-COMPARE.mp4" type="video/mp4" />
+        </video>
+        <figcaption class="gs-media-note mono" data-fr="Trois entraînements réels · même trajet caméra · RGB en haut, directionnel en bas · 14 s" data-en="Three real training runs · same camera path · RGB above, directional below · 14 s">Trois entraînements réels · même trajet caméra · RGB en haut, directionnel en bas · 14 s</figcaption>
+      </figure>
+      <p class="gs-media-note mono" data-fr="Contribution : intégration, interfaces de contrôle et outils de comparaison. Les représentations restent attribuées à leurs auteurs." data-en="Contribution: integration, control interfaces and comparison tools. Representations remain attributed to their authors.">Contribution : intégration, interfaces de contrôle et outils de comparaison. Les représentations restent attribuées à leurs auteurs.</p>
+    </section>
+
+    <section class="gs-section gs-outputs" aria-labelledby="gs-output-title">
+      <div class="gs-section-heading">
+        <p class="gs-eyebrow mono" data-fr="LECTURES COMPLÉMENTAIRES" data-en="COMPLEMENTARY VIEWS">LECTURES COMPLÉMENTAIRES</p>
+        <h2 id="gs-output-title" data-fr="Géométrie et apparence" data-en="Geometry and appearance">Géométrie et apparence</h2>
+        <p data-fr="Des sorties de la représentation pour examiner une scène sous plusieurs angles." data-en="Representation outputs for examining a scene in different ways.">Des sorties de la représentation pour examiner une scène sous plusieurs angles.</p>
+      </div>
+      <div class="gs-image-grid">
+        <figure class="gs-card gs-image-card">
+          <img src="../assets/projects/gaussian-splatting/CAP-07A.png" loading="lazy" alt="Rendu de profondeur de la reconstruction" />
+          <figcaption><span class="gs-index mono">PROFONDEUR</span><span data-fr="Sortie du rendu · valeur illustrative" data-en="Rendered output · illustrative values">Sortie du rendu · valeur illustrative</span></figcaption>
+        </figure>
+        <figure class="gs-card gs-image-card">
+          <img src="../assets/projects/gaussian-splatting/CAP-07B.png" loading="lazy" alt="Vue RGB de la scène reconstruite" />
+          <figcaption><span class="gs-index mono">RGB</span><span data-fr="Vue de la scène reconstruite" data-en="Reconstructed scene view">Vue de la scène reconstruite</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="gs-section gs-next" aria-labelledby="gs-next-title">
+      <div class="gs-section-heading">
+        <p class="gs-eyebrow mono" data-fr="À COMPLÉTER" data-en="TO COMPLETE">À COMPLÉTER</p>
+        <h2 id="gs-next-title" data-fr="Une démonstration à compléter" data-en="One demo to complete">Une démonstration à compléter</h2>
+      </div>
+      <div class="gs-next-grid">
+        <article class="gs-next-card">
+          <span class="gs-index mono">05 / ÉDITION COLLECTIVE</span>
+          <h3 data-fr="Montrer avant, sélection, après" data-en="Show before, selection and after">Montrer avant, sélection, après</h3>
+          <p data-fr="Compléter les captures de sélection, découpe et sauvegarde sur une copie de scène." data-en="Add selection, cutout and save captures using a copy of the scene.">Compléter les captures de sélection, découpe et sauvegarde sur une copie de scène.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="gs-section gs-research" aria-labelledby="gs-research-title">
+      <p class="gs-eyebrow mono" data-fr="R&D APPLIQUÉE" data-en="APPLIED R&D">R&D APPLIQUÉE</p>
+      <h2 id="gs-research-title" data-fr="Intégrer la recherche dans un outil commun" data-en="Bringing research into a shared tool">Intégrer la recherche dans un outil commun</h2>
+      <p data-fr="Mon travail porte sur l’intégration et le développement d’outils autour de méthodes publiées, ainsi que sur les parcours d’entraînement et d’inspection. Les contributions aux outils d’édition sont collectives. Les algorithmes restent attribués aux auteurs de leurs publications." data-en="My work focuses on integrating published methods and building tools for training and inspection. Editing tools were developed collaboratively. Algorithms remain attributed to their research authors.">Mon travail porte sur l’intégration et le développement d’outils autour de méthodes publiées, ainsi que sur les parcours d’entraînement et d’inspection. Les contributions aux outils d’édition sont collectives. Les algorithmes restent attribués aux auteurs de leurs publications.</p>
+      <ul class="gs-papers">
+        <li><a href="https://arxiv.org/abs/2308.04079" target="_blank" rel="noopener noreferrer">3D Gaussian Splatting for Real-Time Radiance Field Rendering <span>↗</span></a></li>
+        <li><a href="https://arxiv.org/abs/2404.09591" target="_blank" rel="noopener noreferrer">3D Gaussian Splatting as Markov Chain Monte Carlo <span>↗</span></a></li>
+      </ul>
+    </section>
+
+    <footer class="gs-credits">
+      <p class="gs-eyebrow mono" data-fr="CRÉDITS · SCÈNE PATRIMONIALE" data-en="HERITAGE SCENE CREDITS">CRÉDITS · SCÈNE PATRIMONIALE</p>
+      <p><strong>Quoc Anh Bui, Gilles Rougeron, Mathis Boston et Patrick Bergeot (2026).</strong> <em>Hôtel de la Marine dataset for 3D reconstruction.</em> Zenodo.</p>
+      <p data-fr="Sous-ensemble réduit d’un dataset publié. Scène patrimoniale du Centre des monuments nationaux (CMN). Licence : CC BY-NC-SA 4.0." data-en="Reduced subset of a published dataset. Heritage scene of the Centre des monuments nationaux (CMN). License: CC BY-NC-SA 4.0.">Sous-ensemble réduit d’un dataset publié. Scène patrimoniale du Centre des monuments nationaux (CMN). Licence : CC BY-NC-SA 4.0.</p>
+      <p><a href="https://doi.org/10.5281/zenodo.18612941" target="_blank" rel="noopener noreferrer">DOI 10.5281/zenodo.18612941</a> · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a></p>
+      <p class="gs-credits-note mono" data-fr="Les captures patrimoniales utilisent une scène statique. Le clip de séquence montre la navigation et la lecture de fichiers PLY distincts." data-en="The heritage captures use a static scene. The sequence clip shows navigation and playback of distinct PLY model files.">Les captures patrimoniales utilisent une scène statique. Le clip de séquence montre la navigation et la lecture de fichiers PLY distincts.</p>
+      <div class="gs-footer-row mono"><span>© 2026 MATHIS BOSTON</span><a href="../index.html#projets" data-fr="RETOUR AU PORTFOLIO ↑" data-en="BACK TO PORTFOLIO ↑">RETOUR AU PORTFOLIO ↑</a></div>
+    </footer>
+  </main>
+</body>
+</html>

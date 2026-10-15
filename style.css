@@ -133,7 +133,7 @@ body {
   cursor: grab;
 }
 #avatar:active { cursor: grabbing; }
-#avatar canvas { display: block; touch-action: none; }
+#avatar canvas { display: block; touch-action: auto; }
 #avatar.avatar-click-hint {
   cursor: pointer;
   animation: avatar-click-halo 12s ease-out 3s infinite;

@@ -58,9 +58,8 @@ avatarSplat.initialized.then(() => {
   avatarRadius = boundsRadius / Math.sin(THREE.MathUtils.degToRad(avatarCamera.fov / 2)) * 0.92;
 }).catch((error) => console.error("Avatar splat failed to load:", error));
 
-let isDragging = false;
-let lastX = 0;
-let lastY = 0;
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+let mobileLookTime = 0;
 let yaw = Math.PI;
 let pitch = 0;
 avatarPivot.rotation.y = yaw;
@@ -69,28 +68,12 @@ let lastAvatarFrameTime = null;
 const resetAvatarLook = () => {
   yaw = Math.PI;
   pitch = 0;
-  isDragging = false;
+  mobileLookTime = 0;
 };
 document.documentElement.addEventListener("mouseleave", resetAvatarLook);
 window.addEventListener("blur", resetAvatarLook);
 mobileLayout.addEventListener("change", resetAvatarLook);
-
-avatarCanvas.addEventListener("mousedown", (e) => {
-  isDragging = true;
-  lastX = e.clientX;
-  lastY = e.clientY;
-});
-
-// touch support
-avatarCanvas.addEventListener("touchstart", (e) => {
-  isDragging = true;
-  lastX = e.touches[0].clientX;
-  lastY = e.touches[0].clientY;
-}, { passive: true });
-
-window.addEventListener("mouseup", () => { isDragging = false; });
-window.addEventListener("touchend", () => { isDragging = false; });
-window.addEventListener("touchcancel", resetAvatarLook);
+reducedMotion.addEventListener("change", resetAvatarLook);
 
 window.addEventListener("mousemove", (e) => {
   if (mobileLayout.matches) return;
@@ -109,15 +92,6 @@ window.addEventListener("mousemove", (e) => {
   );
 });
 
-window.addEventListener("touchmove", (e) => {
-  if (!isDragging) return;
-  yaw  += (e.touches[0].clientX - lastX) * 0.005;
-  pitch -= (e.touches[0].clientY - lastY) * 0.005;
-  pitch  = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, pitch));
-  lastX = e.touches[0].clientX;
-  lastY = e.touches[0].clientY;
-}, { passive: true });
-
 // Load LinkedIn only when the visitor opens a demonstrator.
 document.querySelectorAll(".linkedin-demo").forEach((demo) => {
   demo.addEventListener("toggle", () => {
@@ -134,6 +108,13 @@ document.querySelectorAll(".linkedin-demo").forEach((demo) => {
 avatarRenderer.setAnimationLoop((time) => {
   const delta = lastAvatarFrameTime === null ? 0 : Math.min((time - lastAvatarFrameTime) / 1000, 0.1);
   lastAvatarFrameTime = time;
+  if (mobileLayout.matches) {
+    // A gentle 12-second sweep keeps the face visible without touch input.
+    if (!reducedMotion.matches) mobileLookTime += delta;
+    yaw = Math.PI + (reducedMotion.matches ? 0 : Math.sin(mobileLookTime * Math.PI / 6) * THREE.MathUtils.degToRad(20));
+    pitch = 0;
+    if (reducedMotion.matches) avatarPivot.rotation.set(0, Math.PI, 0);
+  }
   const blend = 1 - Math.exp(-12 * delta);
   const yawDelta = Math.atan2(Math.sin(yaw - avatarPivot.rotation.y), Math.cos(yaw - avatarPivot.rotation.y));
   avatarPivot.rotation.y += yawDelta * blend;
